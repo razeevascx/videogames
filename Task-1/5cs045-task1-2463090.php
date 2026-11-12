@@ -4,60 +4,51 @@
 $mysqli = null;
 $dbAvailable = false;
 $movies = [];
-$message = "";
-$added = isset($_GET["added"]);
+$message = '';
+$added = isset($_GET['added']);
 
 try {
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    $mysqli = new mysqli(
-        "localhost",
-        "2463090",
-        "2463090",
-        "db2463090"
-    );
+    $mysqli = new mysqli('localhost', '2463090', '2463090', 'db2463090');
 
-    $mysqli->set_charset("utf8mb4");
+    $mysqli->set_charset('utf8mb4');
     $dbAvailable = true;
-
 } catch (Throwable $e) {
-    error_log("Database connection failed: " . $e->getMessage());
-    $message = "Database is unavailable. Trying your saved movies.";
+    error_log('Database connection failed: ' . $e->getMessage());
+    $message = 'Database is unavailable. Trying your saved movies.';
 }
 
 // Add a movie
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $movie_name = trim($_POST["Movie_name"] ?? "");
-    $genre = trim($_POST["Genre"] ?? "");
-    $price = $_POST["Price"] ?? "";
-    $release_date = $_POST["release_date"] ?? "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $movie_name = trim($_POST['Movie_name'] ?? '');
+    $genre = trim($_POST['Genre'] ?? '');
+    $price = $_POST['Price'] ?? '';
+    $release_date = $_POST['release_date'] ?? '';
 
-    if (
-        !$dbAvailable
-    ) {
-        $message = "Cannot add a movie while the database is unavailable. Your saved movies are shown below.";
+    if (!$dbAvailable) {
+        $message =
+            'Cannot add a movie while the database is unavailable. Your saved movies are shown below.';
     } elseif (
-        $movie_name === "" ||
+        $movie_name === '' ||
         strlen($movie_name) > 100 ||
-        $genre === "" ||
+        $genre === '' ||
         strlen($genre) > 20 ||
         !is_numeric($price) ||
-        !is_finite((float)$price) ||
-        (float)$price < 0
+        !is_finite((float) $price) ||
+        (float) $price < 0
     ) {
-        $message = "Please enter valid movie details.";
+        $message = 'Please enter valid movie details.';
     } elseif (
-        $release_date !== "" &&
-        (
-            !preg_match('/^\d{4}-\d{2}-\d{2}$/', $release_date) ||
+        $release_date !== '' &&
+        (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $release_date) ||
             !checkdate(
-                (int)substr($release_date, 5, 2),
-                (int)substr($release_date, 8, 2),
-                (int)substr($release_date, 0, 4)
-            )
-        )
+                (int) substr($release_date, 5, 2),
+                (int) substr($release_date, 8, 2),
+                (int) substr($release_date, 0, 4),
+            ))
     ) {
-        $message = "Please enter a valid release date.";
+        $message = 'Please enter a valid release date.';
     } else {
         try {
             $sql = "INSERT INTO movies
@@ -66,27 +57,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $stmt = $mysqli->prepare($sql);
 
-            $movie_price = (float)$price;
-            $date = $release_date !== "" ? $release_date : null;
+            $movie_price = (float) $price;
+            $date = $release_date !== '' ? $release_date : null;
 
-            $stmt->bind_param(
-                "ssds",
-                $movie_name,
-                $genre,
-                $movie_price,
-                $date
-            );
+            $stmt->bind_param('ssds', $movie_name, $genre, $movie_price, $date);
 
             $stmt->execute();
             $stmt->close();
 
             // Reload the database records and refresh localStorage.
-            header("Location: 5cs045-task1-2463090.php?added=1");
-            exit;
-
+            header('Location: 5cs045-task1-2463090.php?added=1');
+            exit();
         } catch (Throwable $e) {
-            error_log("Movie insert failed: " . $e->getMessage());
-            $message = "Unable to add the movie. Please try again.";
+            error_log('Movie insert failed: ' . $e->getMessage());
+            $message = 'Unable to add the movie. Please try again.';
         }
     }
 }
@@ -102,11 +86,10 @@ if ($dbAvailable) {
         $result = $mysqli->query($sql);
         $movies = $result->fetch_all(MYSQLI_ASSOC);
         $result->free();
-
     } catch (Throwable $e) {
-        error_log("Movie retrieval failed: " . $e->getMessage());
+        error_log('Movie retrieval failed: ' . $e->getMessage());
         $dbAvailable = false;
-        $message = "Unable to retrieve movies from the database. Trying your saved movies.";
+        $message = 'Unable to retrieve movies from the database. Trying your saved movies.';
     }
 }
 
@@ -117,15 +100,11 @@ if ($mysqli !== null) {
 // Encode the actual database records for JavaScript.
 $moviesJson = json_encode(
     $movies,
-    JSON_HEX_TAG |
-    JSON_HEX_APOS |
-    JSON_HEX_QUOT |
-    JSON_HEX_AMP |
-    JSON_INVALID_UTF8_SUBSTITUTE
+    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_INVALID_UTF8_SUBSTITUTE,
 );
 
 if ($moviesJson === false) {
-    $moviesJson = "[]";
+    $moviesJson = '[]';
 }
 ?>
 
@@ -173,9 +152,9 @@ if ($moviesJson === false) {
         </div>
     <?php endif; ?>
 
-    <?php if ($message !== ""): ?>
+    <?php if ($message !== ''): ?>
         <div class="alert alert-warning" role="alert">
-            <?= htmlspecialchars($message, ENT_QUOTES, "UTF-8") ?>
+            <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
         </div>
     <?php endif; ?>
 
@@ -289,7 +268,7 @@ if ($moviesJson === false) {
 <script>
 // Actual records retrieved by PHP from MySQL.
 const serverMovies = <?= $moviesJson ?>;
-const serverAvailable = <?= $dbAvailable ? "true" : "false" ?>;
+const serverAvailable = <?= $dbAvailable ? 'true' : 'false' ?>;
 
 const CACHE_KEY = "movieLibraryCache";
 
@@ -439,7 +418,7 @@ if (serverAvailable) {
 }
 
 // Reopen the modal if server-side validation or insertion failed.
-<?php if ($message !== "" && $_SERVER["REQUEST_METHOD"] === "POST"): ?>
+<?php if ($message !== '' && $_SERVER['REQUEST_METHOD'] === 'POST'): ?>
 document.addEventListener("DOMContentLoaded", function () {
     const modalElement = document.getElementById("addMovieModal");
     bootstrap.Modal.getOrCreateInstance(modalElement).show();

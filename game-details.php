@@ -1,6 +1,6 @@
 <?php
 // Connect to database and run SQL query
-include("db.php");
+include 'db.php';
 
 // Grabs id value from URL
 $id = $_GET['id'];

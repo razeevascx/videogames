@@ -1,8 +1,7 @@
 <h1>Search results</h1>
 <?php
-
 // Connect to database and run SQL query
-include("db.php");
+include 'db.php';
 
 // Read value from form
 $keywords = $_POST['keywords'];
