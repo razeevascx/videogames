@@ -1,5 +1,19 @@
-<ul id="navigation">
-    <li><a href="#">Page 1</a></li>
-    <li><a href="#">Page 2</a></li>
-    <li><a href="#">Page 3</a></li>
-</ul>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">Videogame catalogue</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavigation"
+                aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNavigation">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="list-games.php">List games</a></li>
+                <li class="nav-item"><a class="nav-link" href="add-game-form.php">Add game</a></li>
+                <li class="nav-item ms-lg-2">
+                    <a class="btn btn-outline-light" href="search-games.php">Search games</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
