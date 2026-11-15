@@ -1,23 +1,52 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ajax demo</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
-rel="stylesheet">
-</head>
-<body>
-<div class="container">
-<h1>Game search</h1>
-<form class="row g-3">
-<div class="col-auto">
-<input type="text" class="form-control" id="searchBox" placeholder="Keywords">
-</div>
-</form>
-<p id="results"></p>
-</div>
-</body>
-</html>
-<script>
-</script>
+<?php
+
+require 'bootstrap.php';
+
+$name = trim($_GET['name'] ?? '');
+$fromYear = filter_input(INPUT_GET, 'from_year', FILTER_VALIDATE_INT);
+$toYear = filter_input(INPUT_GET, 'to_year', FILTER_VALIDATE_INT);
+$minRating = filter_input(INPUT_GET, 'min_rating', FILTER_VALIDATE_INT);
+
+$conditions = [];
+$params = [];
+$types = '';
+if ($name !== '') {
+    $conditions[] = 'game_name LIKE ?';
+    $params[] = "%{$name}%";
+    $types .= 's';
+}
+if ($fromYear !== false && $fromYear !== null) {
+    $conditions[] = 'released_date >= ?';
+    $params[] = "{$fromYear}-01-01";
+    $types .= 's';
+}
+if ($toYear !== false && $toYear !== null) {
+    $conditions[] = 'released_date <= ?';
+    $params[] = "{$toYear}-12-31";
+    $types .= 's';
+}
+if ($minRating !== false && $minRating !== null) {
+    $conditions[] = 'rating >= ?';
+    $params[] = $minRating;
+    $types .= 'i';
+}
+
+$sql = 'SELECT game_id, game_name, game_description, released_date, rating FROM videogames';
+if ($conditions) {
+    $sql .= ' WHERE ' . implode(' AND ', $conditions);
+}
+$sql .= ' ORDER BY released_date DESC, game_name';
+$statement = $mysqli->prepare($sql);
+if ($params) {
+    $statement->bind_param($types, ...$params);
+}
+$statement->execute();
+$games = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+
+render_template('list-games.html', [
+    'name' => $name,
+    'from_year' => $fromYear ?: '',
+    'to_year' => $toYear ?: '',
+    'min_rating' => $minRating ?: '',
+    'games' => $games,
+]);
