@@ -1,17 +1,24 @@
 <?php
-// Connect to database and run SQL query
-include 'db.php';
 
-// Grabs id value from URL
-$id = $_GET['id'];
+require 'bootstrap.php';
 
-$sql = "SELECT * FROM videogames WHERE game_id = {$id}";
-$rst = mysqli_query($mysqli, $sql);
-$a_row = mysqli_fetch_assoc($rst);
-?>
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$id) {
+    http_response_code(404);
+    exit('Game not found.');
+}
 
-<h1><?= $a_row['game_name'] ?></h1>
-<p><?= $a_row['game_description'] ?></p>
+$statement = $mysqli->prepare('SELECT * FROM videogames WHERE game_id = ?');
+$statement->bind_param('i', $id);
+$statement->execute();
+$game = $statement->get_result()->fetch_assoc();
 
-<a href="list-games.php">
-  << Back to list</a>
+if (!$game) {
+    http_response_code(404);
+    exit('Game not found.');
+}
+
+render_template('game-details.html', [
+    'game' => $game,
+    'csrf_token' => csrf_token(),
+]);
