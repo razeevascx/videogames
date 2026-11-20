@@ -91,10 +91,19 @@
             <h2 id="screenshots-title" class="h5 mb-3">Screenshots</h2>
             <div class="game-screenshots">
                 {% for image in game.external.screenshots %}
-                <a href="{{ image }}" target="_blank" rel="noopener noreferrer"><img src="{{ image }}" alt="{{ game.game_name }} screenshot {{ loop.index }}" width="640" height="360" loading="lazy" decoding="async"></a>
+                <a href="{{ image }}" target="_blank" rel="noopener noreferrer" data-lightbox-trigger aria-label="Open screenshot {{ loop.index }} of {{ game.game_name }}"><img src="{{ image }}" alt="{{ game.game_name }} screenshot {{ loop.index }}" width="640" height="360" loading="lazy" decoding="async"></a>
                 {% endfor %}
             </div>
         </section>
+        <dialog id="game-image-lightbox" class="lightbox-dialog" closedby="any" aria-labelledby="lightbox-title">
+            <h2 id="lightbox-title" class="visually-hidden">{{ game.game_name }} screenshots</h2>
+            <form class="lightbox-close-form" method="dialog"><button class="lightbox-close" type="submit" aria-label="Close screenshot" autofocus><i class="bi bi-x-lg" aria-hidden="true"></i></button></form>
+            <div class="lightbox-stage">
+                <button class="lightbox-nav lightbox-previous" type="button" aria-label="Previous screenshot"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
+                <img id="lightbox-image" src="" alt="">
+                <button class="lightbox-nav lightbox-next" type="button" aria-label="Next screenshot"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+            </div>
+        </dialog>
         {% endif %}
 
     </article>
@@ -142,6 +151,7 @@
 <script src="public/js/game-artwork.js"></script>
 <script src="public/js/action-dialogs.js" defer></script>
 <script src="public/js/action-toast.js" defer></script>
+<script src="public/js/game-lightbox.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

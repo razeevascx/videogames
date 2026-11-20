@@ -549,6 +549,100 @@
     border-radius: .5rem;
 }
 
+.game-screenshots a:focus-visible img {
+    outline: 3px solid var(--theme-accent);
+    outline-offset: 3px;
+}
+
+.lightbox-dialog {
+    width: fit-content;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100dvh - 2rem);
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: .75rem;
+    background: transparent;
+    color: #f8f9fa;
+}
+
+.lightbox-dialog::backdrop {
+    background: rgb(0 0 0 / 92%);
+}
+
+.lightbox-close-form {
+    position: absolute;
+    z-index: 2;
+    top: .75rem;
+    right: .75rem;
+}
+
+.lightbox-close,
+.lightbox-nav {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid rgb(255 255 255 / 24%);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 10%);
+    color: #fff;
+}
+
+.lightbox-close:hover,
+.lightbox-nav:hover {
+    background: rgb(255 255 255 / 20%);
+}
+
+.lightbox-stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+}
+
+.lightbox-stage > img {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100dvh - 2rem);
+    object-fit: contain;
+    border-radius: .75rem;
+}
+
+.lightbox-nav {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.lightbox-previous {
+    left: .75rem;
+}
+
+.lightbox-next {
+    right: .75rem;
+}
+
+.lightbox-nav[hidden] {
+    display: none;
+}
+
+@media (max-width: 40rem) {
+    .lightbox-nav {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: rgb(0 0 0 / 55%);
+    }
+
+    .lightbox-previous {
+        left: .5rem;
+    }
+
+    .lightbox-next {
+        right: .5rem;
+    }
+}
+
 .game-details {
     container-type: inline-size;
 }
