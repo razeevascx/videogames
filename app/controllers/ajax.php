@@ -1,6 +1,6 @@
 <?php
 
-require 'bootstrap.php';
+require_once dirname(__DIR__) . '/bootstrap.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
