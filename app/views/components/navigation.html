@@ -1,0 +1,15 @@
+<nav class="navbar" aria-label="Main navigation">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand d-flex align-items-center" href="index.php" aria-label="Home" title="Home">
+            <img src="public/images/logo.svg" alt="Videogame catalogue" width="40" height="40">
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            {% if add_game_modal|default(false) %}
+            <button class="nav-icon nav-search" type="button" command="show-modal" commandfor="search-game-dialog" aria-label="Search games" title="Search games"><i class="bi bi-search" aria-hidden="true"></i><span>Search</span></button>
+            {% else %}
+            <a class="nav-icon nav-search" href="index.php?search=1" aria-label="Search games" title="Search games"><i class="bi bi-search" aria-hidden="true"></i><span>Search</span></a>
+            {% endif %}
+            <button class="nav-icon" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme" aria-pressed="false" hidden><i class="bi bi-moon-stars" aria-hidden="true"></i></button>
+        </div>
+    </div>
+</nav>
