@@ -1,17 +1,13 @@
 <?php
 
-$autoload = __DIR__ . '/vendor/autoload.php';
-if (!file_exists($autoload)) {
-    $autoload = dirname(__DIR__, 2) . '/vendor/autoload.php';
-}
-require_once $autoload;
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 function render_template(string $template, array $data = []): never
 {
     static $twig;
 
     $twig ??= new Twig\Environment(
-        new Twig\Loader\FilesystemLoader(__DIR__),
+        new Twig\Loader\FilesystemLoader(dirname(__DIR__) . '/views'),
         ['autoescape' => 'html']
     );
 
