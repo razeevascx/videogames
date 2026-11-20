@@ -47,14 +47,14 @@
     {% endblock %}
 </main>
 {% include 'components/action-toast.html' %}
-<dialog id="add-game-dialog" aria-labelledby="add-game-title" class="rounded-3 p-4">
+<dialog id="add-game-dialog" aria-labelledby="add-game-title">
     <div class="d-flex justify-content-between align-items-center gap-3">
         <h2 id="add-game-title" class="h4 mb-0">Add a videogame</h2>
         <form method="dialog"><button class="btn-close" type="submit" aria-label="Close add game"></button></form>
     </div>
     {% include 'components/add-game-fields.html' %}
 </dialog>
-<dialog id="search-game-dialog" aria-labelledby="search-game-title" class="rounded-3 p-4">
+<dialog id="search-game-dialog" aria-labelledby="search-game-title">
     <div class="d-flex justify-content-between align-items-center gap-3">
         <h2 id="search-game-title" class="h4 mb-0">Search games</h2>
         <form method="dialog"><button class="btn-close" type="submit" aria-label="Close search games"></button></form>

@@ -27,8 +27,6 @@
     --theme-accent-hover: light-dark(#063b80, #cfe2ff);
     --theme-accent-text: light-dark(#fff, #172536);
     --theme-danger: light-dark(#a91e2c, #ffabb3);
-    --theme-border-start: light-dark(#a2b5cf, #63778f);
-    --theme-border-end: light-dark(#c6b6cb, #514657);
     --theme-shadow: light-dark(rgb(37 38 39 / 10%), rgb(0 0 0 / 22%));
     --bs-body-color: light-dark(#252627, #f1f2f4);
     --bs-body-color-rgb: 37, 38, 39;
@@ -84,15 +82,35 @@
     gap: .5rem;
     border-radius: 999px;
     font-size: 1rem;
-    background: var(--theme-surface);
-    border: 1px solid var(--bs-border-color);
-    font-weight: 500;
+    color: var(--theme-accent-text);
+    background-color: var(--theme-accent);
+    background-image: linear-gradient(135deg in oklab, var(--theme-accent-hover), var(--theme-accent));
+    border: 0;
+    font-weight: 600;
+    box-shadow:
+        0 1px 2px light-dark(rgb(25 32 45 / 5%), rgb(0 0 0 / 16%)),
+        0 4px 10px light-dark(rgb(25 32 45 / 7%), rgb(0 0 0 / 18%)),
+        0 12px 24px light-dark(rgb(25 32 45 / 4%), rgb(0 0 0 / 12%));
 }
 
 .nav-search:hover {
-    background: var(--theme-accent);
-    border-color: var(--theme-accent);
     color: var(--theme-accent-text);
+    background-color: var(--theme-accent-hover);
+    background-image: linear-gradient(135deg in oklab, var(--theme-accent), var(--theme-accent-hover));
+    box-shadow:
+        0 2px 4px light-dark(rgb(25 32 45 / 6%), rgb(0 0 0 / 18%)),
+        0 8px 18px light-dark(rgb(25 32 45 / 10%), rgb(0 0 0 / 22%)),
+        0 18px 32px light-dark(rgb(25 32 45 / 6%), rgb(0 0 0 / 16%));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .nav-search {
+        transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    }
+
+    .nav-search:hover {
+        transform: translateY(-1px);
+    }
 }
 
 .game-grid {
@@ -307,7 +325,7 @@
 
 .game-grid[data-view="list"] .game-card-heading {
     flex: 1;
-    padding: 1rem;
+    padding: 1.125rem 1.25rem;
 }
 
 .game-filter-form {
@@ -349,12 +367,13 @@
     gap: 0;
     min-width: 0;
     padding: 0;
-    border: 1px solid transparent;
+    border: 0;
     border-radius: 1rem;
-    background:
-        linear-gradient(var(--theme-surface), var(--theme-surface)) padding-box,
-        linear-gradient(135deg, var(--theme-border-start), var(--theme-border-end)) border-box;
-    box-shadow: 0 2px 8px var(--theme-shadow);
+    background: var(--theme-surface);
+    box-shadow:
+        0 1px 2px light-dark(rgb(25 32 45 / 5%), rgb(0 0 0 / 16%)),
+        0 6px 16px light-dark(rgb(25 32 45 / 7%), rgb(0 0 0 / 18%)),
+        0 18px 38px light-dark(rgb(25 32 45 / 5%), rgb(0 0 0 / 12%));
     overflow: hidden;
 }
 
@@ -362,7 +381,7 @@
     display: flex;
     flex-direction: column;
     gap: .4rem;
-    padding: 1.25rem;
+    padding: 1.125rem 1.25rem;
     flex: none;
     min-height: 0;
 }
@@ -404,7 +423,20 @@
 }
 
 .game-card-link:hover .game-card {
-    box-shadow: 0 4px 16px var(--theme-shadow);
+    box-shadow:
+        0 2px 5px light-dark(rgb(25 32 45 / 6%), rgb(0 0 0 / 18%)),
+        0 10px 24px light-dark(rgb(25 32 45 / 10%), rgb(0 0 0 / 22%)),
+        0 24px 48px light-dark(rgb(25 32 45 / 7%), rgb(0 0 0 / 16%));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .game-card {
+        transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .game-card-link:hover .game-card {
+        transform: translateY(-2px);
+    }
 }
 
 .game-description {
@@ -817,20 +849,110 @@
     opacity: 1;
 }
 
-.btn-outline-primary {
-    --bs-btn-color: var(--theme-accent);
-    --bs-btn-border-color: var(--theme-accent);
+.btn {
+    padding: .625rem 1rem;
+    border-radius: .75rem;
+    font-weight: 600;
+    box-shadow:
+        0 1px 2px light-dark(rgb(25 32 45 / 5%), rgb(0 0 0 / 16%)),
+        0 4px 10px light-dark(rgb(25 32 45 / 7%), rgb(0 0 0 / 18%)),
+        0 12px 24px light-dark(rgb(25 32 45 / 4%), rgb(0 0 0 / 12%));
+}
+
+.btn-sm {
+    padding: .375rem .75rem;
+    border-radius: .625rem;
+}
+
+.btn-primary {
+    --bs-btn-color: var(--theme-accent-text);
+    --bs-btn-bg: var(--theme-accent);
+    --bs-btn-border-color: transparent;
     --bs-btn-hover-color: var(--theme-accent-text);
-    --bs-btn-hover-bg: var(--theme-accent);
-    --bs-btn-hover-border-color: var(--theme-accent);
+    --bs-btn-hover-bg: var(--theme-accent-hover);
+    --bs-btn-hover-border-color: transparent;
     --bs-btn-active-color: var(--theme-accent-text);
     --bs-btn-active-bg: var(--theme-accent-hover);
-    --bs-btn-active-border-color: var(--theme-accent-hover);
+    --bs-btn-active-border-color: transparent;
+    background-image: linear-gradient(135deg in oklab, var(--theme-accent-hover), var(--theme-accent));
+}
+
+.btn-primary:hover {
+    background-image: linear-gradient(135deg in oklab, var(--theme-accent), var(--theme-accent-hover));
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--theme-accent);
+    --bs-btn-bg: light-dark(rgb(8 77 166 / 8%), rgb(158 197 254 / 12%));
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: var(--theme-accent-text);
+    --bs-btn-hover-bg: var(--theme-accent);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-color: var(--theme-accent-text);
+    --bs-btn-active-bg: var(--theme-accent-hover);
+    --bs-btn-active-border-color: transparent;
+    background-image: linear-gradient(135deg in oklab,
+        light-dark(rgb(8 77 166 / 10%), rgb(158 197 254 / 15%)),
+        light-dark(rgb(8 77 166 / 4%), rgb(158 197 254 / 7%)));
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active {
+    background-image: linear-gradient(135deg in oklab, var(--theme-accent-hover), var(--theme-accent));
 }
 
 .btn-outline-danger {
     --bs-btn-color: var(--theme-danger);
-    --bs-btn-border-color: var(--theme-danger);
+    --bs-btn-bg: light-dark(rgb(169 30 44 / 8%), rgb(255 171 179 / 12%));
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: light-dark(#fff, #252627);
+    --bs-btn-hover-bg: var(--theme-danger);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-color: light-dark(#fff, #252627);
+    --bs-btn-active-bg: var(--theme-danger);
+    --bs-btn-active-border-color: transparent;
+    background-image: linear-gradient(135deg in oklab,
+        light-dark(rgb(169 30 44 / 10%), rgb(255 171 179 / 15%)),
+        light-dark(rgb(169 30 44 / 4%), rgb(255 171 179 / 7%)));
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:active {
+    background-image: linear-gradient(135deg in oklab, light-dark(#801824, #ffc6cc), var(--theme-danger));
+}
+
+.btn-danger {
+    --bs-btn-color: light-dark(#fff, #252627);
+    --bs-btn-bg: var(--theme-danger);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: light-dark(#fff, #252627);
+    --bs-btn-hover-bg: var(--theme-danger);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-color: light-dark(#fff, #252627);
+    --bs-btn-active-bg: var(--theme-danger);
+    --bs-btn-active-border-color: transparent;
+    background-image: linear-gradient(135deg in oklab, light-dark(#801824, #ffc6cc), var(--theme-danger));
+}
+
+.btn-danger:hover {
+    background-image: linear-gradient(135deg in oklab, var(--theme-danger), light-dark(#801824, #ffc6cc));
+}
+
+.btn:not(:disabled):hover {
+    box-shadow:
+        0 2px 4px light-dark(rgb(25 32 45 / 6%), rgb(0 0 0 / 18%)),
+        0 8px 18px light-dark(rgb(25 32 45 / 10%), rgb(0 0 0 / 22%)),
+        0 18px 32px light-dark(rgb(25 32 45 / 6%), rgb(0 0 0 / 16%));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .btn {
+        transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    }
+
+    .btn:not(:disabled):hover {
+        transform: translateY(-1px);
+    }
 }
 
 :focus-visible {
@@ -838,16 +960,20 @@
     outline-offset: 3px;
 }
 
-#add-game-dialog,
-#search-game-dialog,
-.action-dialog {
+dialog:not(.lightbox-dialog) {
     width: min(40rem, calc(100% - 2rem));
     max-height: calc(100dvh - 2rem);
     overflow: auto;
-    background: var(--bs-body-bg);
+    padding: clamp(1.25rem, 4vw, 2rem);
+    border: 0;
+    border-radius: 1.25rem;
+    background-color: var(--bs-body-bg);
+    background-image: linear-gradient(145deg in oklab, var(--theme-surface), var(--bs-body-bg) 80%);
     color: var(--bs-body-color);
-    border: 1px solid var(--bs-border-color);
-    box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 25%);
+    box-shadow:
+        0 2px 6px light-dark(rgb(25 32 45 / 6%), rgb(0 0 0 / 20%)),
+        0 16px 42px light-dark(rgb(25 32 45 / 12%), rgb(0 0 0 / 38%)),
+        0 36px 90px light-dark(rgb(25 32 45 / 8%), rgb(0 0 0 / 28%));
 }
 
 .action-dialog--compact {
