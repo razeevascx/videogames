@@ -1,11 +1,10 @@
 <?php
 
-require 'bootstrap.php';
+require_once dirname(__DIR__) . '/bootstrap.php';
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
-    http_response_code(404);
-    exit('Game not found.');
+    require __DIR__ . '/404.php';
 }
 
 $statement = $mysqli->prepare('SELECT * FROM videogames WHERE game_id = ?');
@@ -14,8 +13,7 @@ $statement->execute();
 $game = $statement->get_result()->fetch_assoc();
 
 if (!$game) {
-    http_response_code(404);
-    exit('Game not found.');
+    require __DIR__ . '/404.php';
 }
 
 render_template('edit-game.html', [
