@@ -1,8 +1,8 @@
 <?php
 
-require 'bootstrap.php';
+require_once dirname(__DIR__) . '/bootstrap.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirect('list-games.php');
+    redirect('index.php');
 }
 verify_csrf();
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -19,4 +19,5 @@ if (!$id || $name === '' || strlen($name) > 150 || strlen($description) > 5000 |
 $statement = $mysqli->prepare('UPDATE videogames SET game_name = ?, game_description = ?, released_date = ?, rating = ? WHERE game_id = ?');
 $statement->bind_param('sssii', $name, $description, $releasedDate, $rating, $id);
 $statement->execute();
+$_SESSION['flash_toast'] = ['message' => 'Game updated successfully.', 'type' => 'success'];
 redirect("game-details.php?id={$id}");
