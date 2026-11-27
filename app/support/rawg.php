@@ -60,16 +60,7 @@ function rawg_cached_game(int $id, bool $includeScreenshots = false): ?array
     if (!$row) return null;
     $game = rawg_normalize(json_decode($row['payload'], true, 512, JSON_THROW_ON_ERROR));
     $game['screenshots'] = [];
-    if ($includeScreenshots) {
-        $cacheKey = hash('sha256', 'games/' . $id . '/screenshots?page_size=4');
-        $statement->bind_param('s', $cacheKey);
-        $statement->execute();
-        if ($row = $statement->get_result()->fetch_assoc()) {
-            foreach (json_decode($row['payload'], true)['results'] ?? [] as $shot) {
-                if ($url = rawg_image($shot['image'] ?? null)) $game['screenshots'][] = $url;
-            }
-        }
-    }
+    if ($includeScreenshots) $game['screenshots'] = rawg_screenshots($id, true);
     return $game;
 }
 
@@ -124,7 +115,8 @@ function rawg_game_data(array $saved): ?array
 function rawg_normalize(array $game): array
 {
     $rating = (float) ($game['rating'] ?? 0);
-    $top = 5;
+    $top = (float) ($game['rating_top'] ?? 5);
+    if ($top <= 0) $top = 5;
     $description = $game['description_raw'] ?? strip_tags(str_replace(
         ['</p>', '<br>', '<br/>', '<br />'], "\n", $game['description'] ?? ''
     ));
@@ -144,6 +136,9 @@ function rawg_normalize(array $game): array
         'platforms' => $names(array_column($game['platforms'] ?? [], 'platform')),
         'developers' => $names($game['developers'] ?? []),
         'publishers' => $names($game['publishers'] ?? []),
+        'esrb' => $game['esrb_rating']['name'] ?? null,
+        'playtime' => (int) ($game['playtime'] ?? 0),
+        'ratings_count' => (int) ($game['ratings_count'] ?? 0),
         'metacritic' => $game['metacritic'] ?? null,
         'rawg_rating' => $rating,
         'rawg_rating_top' => $top,
@@ -155,15 +150,40 @@ function rawg_details(int $id): array
 {
     $game = rawg_normalize(rawg_request('games/' . $id));
     $game['screenshots'] = [];
-    try {
-        $screenshots = rawg_request('games/' . $id . '/screenshots', ['page_size' => 4]);
-        foreach ($screenshots['results'] ?? [] as $shot) {
-            if ($url = rawg_image($shot['image'] ?? null)) {
-                $game['screenshots'][] = $url;
-            }
-        }
-    } catch (RuntimeException) {
-        // Game details can still be imported if the optional screenshots fail.
-    }
+    $game['screenshots'] = rawg_screenshots($id);
     return $game;
+}
+
+
+function rawg_screenshots(int $id, bool $cachedOnly = false): array
+{
+    global $mysqli;
+    $images = [];
+    $page = 1;
+    do {
+        $query = ['page' => $page, 'page_size' => 40];
+        try {
+            if ($cachedOnly) {
+                $key = hash('sha256', 'games/' . $id . '/screenshots?' . http_build_query($query));
+                $row = $mysqli->execute_query('SELECT payload FROM rawg_cache WHERE cache_key = ?', [$key])->fetch_assoc();
+                if (!$row && $page === 1) {
+                    $key = hash('sha256', 'games/' . $id . '/screenshots?page_size=4');
+                    $row = $mysqli->execute_query('SELECT payload FROM rawg_cache WHERE cache_key = ?', [$key])->fetch_assoc();
+                }
+                if (!$row) break;
+                $response = json_decode($row['payload'], true, 512, JSON_THROW_ON_ERROR);
+            } else {
+                $response = rawg_request('games/' . $id . '/screenshots', $query);
+            }
+            foreach ($response['results'] ?? [] as $shot) {
+                if ($url = rawg_image($shot['image'] ?? null)) $images[] = $url;
+            }
+        } catch (RuntimeException) {
+            // Keep images from earlier pages when RAWG becomes unavailable.
+            if ($page === 1 && !$cachedOnly) return rawg_screenshots($id, true);
+            break;
+        }
+        $page++;
+    } while (!empty($response['next']) && !empty($response['results']));
+    return array_values(array_unique($images));
 }

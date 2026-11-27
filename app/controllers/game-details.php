@@ -34,8 +34,19 @@ if ($game) {
     require __DIR__ . '/404.php';
 }
 
+$collections = [];
+if ($game['game_id'] && isset($_SESSION['user_id'])) {
+    $collections = $mysqli->execute_query(
+        'SELECT c.id, c.name, m.game_id IS NOT NULL AS saved
+         FROM collections c LEFT JOIN collection_games m ON m.collection_id = c.id AND m.game_id = ?
+         WHERE c.owner_id = ? ORDER BY c.name, c.id',
+        [$game['game_id'], $_SESSION['user_id']]
+    )->fetch_all(MYSQLI_ASSOC);
+}
+
 render_template('game-details.html', [
     'game' => $game,
+    'collections' => $collections,
     'csrf_token' => csrf_token(),
     'flash_toast' => (function (): ?array {
         $flash = $_SESSION['flash_toast'] ?? null;

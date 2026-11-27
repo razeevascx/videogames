@@ -18,7 +18,7 @@ responsive styling.
 
 ## Requirements
 
-- PHP 8+
+- PHP 8.2+
 - MySQL with a `videogames` table
 - Composer
 
@@ -39,7 +39,7 @@ responsive styling.
    Use `127.0.0.1` for a TCP connection; `localhost` uses a Unix socket in PHP.
    Environment variables must be exported before starting the PHP server.
 
-2. Create the catalogue table by importing `database/schema.sql` into your database.
+2. Create the catalogue table by importing `database/schema.sql` into your database, then run `php scripts/migrate.php` to enable accounts and collections.
 
 3. Install Twig:
 
@@ -125,3 +125,19 @@ respect genre, platform, developer/publisher, release year and sorting; minimum
 ratings are checked against RAWG ratings converted to the catalogue’s ten-point
 scale. Existing catalogue games are skipped. Batches reuse the database cache,
 and remote results can be opened before choosing **Add to catalogue**.
+
+## University deployment
+
+The intended URL is https://mi-linux.wlv.ac.uk/~2463090/045/videogames/.
+Upload the project, including .htaccess, into the corresponding public_html/045/videogames directory.
+Apache must permit mod_rewrite and the Options and FileInfo overrides used by .htaccess.
+
+Use PHP 8.2 or newer with mysqli, curl and mbstring. Run
+`composer install --no-dev --optimize-autoloader` before uploading, or run it on the server.
+Create a server .env using .env.example and set the university MySQL credentials and RAWG key.
+The server database host and port must match the university MySQL service.
+For a fresh database, import database/schema.sql, then run `php scripts/migrate.php`.
+For an existing database, run the migration after backing up its data.
+
+Verify login, signup, My games, collection edits, game details, images and logout at the deployed URL.
+Requests to .env, config/database.php and vendor/ must return 403.

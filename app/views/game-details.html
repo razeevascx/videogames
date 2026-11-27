@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <base href="{{ app_base }}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ game.game_name }} | Videogame catalogue</title>
@@ -40,7 +41,7 @@
             </ul>
             {% endif %}
         <div class="details-actions">
-            {% if game.game_id %}
+            {% if user_id and game.owner_id == user_id %}
             <button class="btn btn-outline-primary" type="button" command="show-modal" commandfor="edit-game-dialog">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5 4 4M4 20l5-1L21 7a2.8 2.8 0 0 0-4-4L5 15Z"/></svg>
                 Edit game
@@ -48,7 +49,7 @@
             <button class="btn btn-outline-danger" type="button" command="show-modal" commandfor="delete-game-dialog">
                 <i class="bi bi-trash3" aria-hidden="true"></i> Delete game
             </button>
-            {% elseif game.released_date and not game.external.adult_content|default(false) %}
+            {% elseif user_id and not game.game_id and game.released_date and not game.external.adult_content|default(false) %}
             <form action="add-game.php" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <input type="hidden" name="rawg_id" value="{{ game.rawg_id }}">
@@ -60,6 +61,31 @@
             </form>
             {% endif %}
         </div>
+        {% if game.game_id and user_id %}
+            {% if collections|filter(c => not c.saved)|length %}
+            <form method="post" action="collections.php" class="mt-3">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <input type="hidden" name="game_id" value="{{ game.game_id }}">
+                <label class="form-label fw-semibold" for="destination">Collection</label>
+                <div class="collection-picker">
+                <select class="form-select" name="collection_id" id="destination" required>
+                    <option value="" selected disabled>Choose a collection</option>
+                    {% for collection in collections %}<option value="{{ collection.id }}" {% if collection.saved %}disabled{% endif %}>{{ collection.name }}{% if collection.saved %} (already saved){% endif %}</option>{% endfor %}
+                </select>
+                <button class="btn btn-primary" name="action" value="add">Save to collection</button>
+                </div>
+            </form>
+            {% elseif collections %}
+            <p class="mt-3 mb-2">Saved to all your collections.</p>
+            <a class="btn btn-outline-primary" href="collections.php">View collections</a>
+            {% else %}
+            <button class="btn btn-primary" type="button" command="show-modal" commandfor="create-collection" aria-haspopup="dialog">Create a collection</button>
+            {% endif %}
+        {% elseif not user_id %}
+        <button type="button" class="btn btn-primary" command="show-modal" commandfor="login-dialog" aria-haspopup="dialog">
+            <i class="bi bi-collection me-1" aria-hidden="true"></i> Sign in to collect games
+        </button>
+        {% endif %}
         </header>
         </div>
         <div class="details-content">
@@ -71,7 +97,9 @@
                 {% if values %}<div><dt>{{ label }}</dt><dd>{{ values|join(', ') }}</dd></div>{% endif %}
                 {% endfor %}
                 {% if game.external.metacritic is not null %}<div><dt>Metacritic</dt><dd>{{ game.external.metacritic }}/100</dd></div>{% endif %}
-                <div><dt>RAWG community rating</dt><dd>{{ game.external.rawg_rating }}/5</dd></div>
+                {% if game.external.esrb|default(null) %}<div><dt>Age rating</dt><dd>{{ game.external.esrb }}</dd></div>{% endif %}
+                {% if game.external.playtime|default(0) > 0 %}<div><dt>Average playtime</dt><dd>{{ game.external.playtime }} hours</dd></div>{% endif %}
+                <div><dt>RAWG community rating</dt><dd>{{ game.external.rawg_rating }}/{{ game.external.rawg_rating_top }}{% if game.external.ratings_count|default(0) %} ({{ game.external.ratings_count|number_format }} ratings){% endif %}</dd></div>
             </dl>
             {% else %}
             <p class="text-body-secondary mb-0">Extra information isn’t available for this game yet.</p>
@@ -108,50 +136,17 @@
 
     </article>
 </main>
-{% if game.game_id %}
-<dialog id="edit-game-dialog" class="action-dialog" aria-labelledby="edit-game-title">
-    <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
-        <h2 id="edit-game-title" class="h4 mb-0">Edit game</h2>
-        <form method="dialog"><button class="btn-close" type="submit" aria-label="Close edit game"></button></form>
-    </div>
-    <form action="update-game.php" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <input type="hidden" name="id" value="{{ game.game_id }}">
-        <label class="form-label" for="edit-GameName">Game name</label>
-        <input autofocus required maxlength="150" class="form-control mb-3" id="edit-GameName" name="GameName" value="{{ game.game_name }}">
-        <label class="form-label" for="edit-GameDescription">Description</label>
-        <textarea required maxlength="5000" class="form-control mb-3" id="edit-GameDescription" name="GameDescription" rows="5">{{ game.game_description }}</textarea>
-        <label class="form-label" for="edit-DateReleased">Date released</label>
-        <input required type="date" class="form-control mb-3" id="edit-DateReleased" name="DateReleased" value="{{ game.released_date }}">
-        <label class="form-label" for="edit-GameRating">Rating (0–10)</label>
-        <input required min="0" max="10" type="number" class="form-control mb-4" id="edit-GameRating" name="GameRating" value="{{ game.rating }}">
-        <div class="d-flex justify-content-end gap-2">
-            <button class="btn btn-outline-primary" type="button" command="close" commandfor="edit-game-dialog">Cancel</button>
-            <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg" aria-hidden="true"></i> Save changes</button>
-        </div>
-    </form>
-</dialog>
-<dialog id="delete-game-dialog" class="action-dialog action-dialog--compact" aria-labelledby="delete-game-title" aria-describedby="delete-game-description">
-    <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
-        <h2 id="delete-game-title" class="h4 mb-0">Delete game?</h2>
-        <form method="dialog"><button class="btn-close" type="submit" aria-label="Close delete confirmation"></button></form>
-    </div>
-    <p id="delete-game-description" class="text-body-secondary">This will permanently remove <strong>{{ game.game_name }}</strong> from your catalogue.</p>
-    <div class="d-flex justify-content-end gap-2">
-        <button class="btn btn-outline-primary" type="button" command="close" commandfor="delete-game-dialog" autofocus>Cancel</button>
-        <form method="post" action="delete-game.php">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <input type="hidden" name="id" value="{{ game.game_id }}">
-            <button class="btn btn-danger" type="submit"><i class="bi bi-trash3" aria-hidden="true"></i> Delete game</button>
-        </form>
-    </div>
-</dialog>
+{% if user_id and game.game_id and not collections %}
+{% include 'components/collection-name-dialog.html' with {action: 'create', title: 'New collection'} %}
+{% endif %}
+{% if user_id and game.owner_id == user_id %}
+{% include 'components/manage-game-dialogs.html' %}
 {% endif %}
 {% include 'components/action-toast.html' %}
 <script src="public/js/game-artwork.js"></script>
-<script src="public/js/action-dialogs.js" defer></script>
 <script src="public/js/action-toast.js" defer></script>
 <script src="public/js/game-lightbox.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+{% include 'components/footer.html' %}
 </body>
 </html>

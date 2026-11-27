@@ -27,3 +27,9 @@ function app_site_url(): string
 
     return rtrim($url, '/');
 }
+
+function app_base_path(): string
+{
+    $script = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
+    return rtrim(dirname($script), '/.');
+}

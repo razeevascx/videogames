@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <base href="{{ app_base }}">
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block page_title %}Videogame catalogue{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}Discover, search, and organize a videogame catalogue with ratings, release dates, genres, platforms, and artwork.{% endblock %}">
@@ -47,13 +48,7 @@
     {% endblock %}
 </main>
 {% include 'components/action-toast.html' %}
-<dialog id="add-game-dialog" aria-labelledby="add-game-title">
-    <div class="d-flex justify-content-between align-items-center gap-3">
-        <h2 id="add-game-title" class="h4 mb-0">Add a videogame</h2>
-        <form method="dialog"><button class="btn-close" type="submit" aria-label="Close add game"></button></form>
-    </div>
-    {% include 'components/add-game-fields.html' %}
-</dialog>
+{% if not user_id %}{% include 'components/add-game-dialog.html' %}{% endif %}
 <dialog id="search-game-dialog" aria-labelledby="search-game-title">
     <div class="d-flex justify-content-between align-items-center gap-3">
         <h2 id="search-game-title" class="h4 mb-0">Search games</h2>
@@ -75,7 +70,7 @@
 </dialog>
 <script src="public/js/add-game-dialog.js"></script>
 <script src="public/js/action-toast.js" defer></script>
-<script src="public/js/rawg.js"></script>
+{% if not user_id %}<script src="public/js/rawg.js"></script>{% endif %}
 <script src="public/js/game-artwork.js"></script>
 <script src="public/js/game-layout.js"></script>
 <script src="public/js/latest-games.js" type="module"></script>
@@ -99,5 +94,6 @@ input.addEventListener('input', () => {
     }, 200);
 });
 </script>
+{% include 'components/footer.html' %}
 </body>
 </html>

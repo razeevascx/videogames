@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <base href="{{ app_base }}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Edit {{ game.game_name }} | Videogame catalogue</title>
@@ -32,5 +33,6 @@
         <button class="btn btn-primary" type="submit">Save changes</button>
     </form>
 </main>
+{% include 'components/footer.html' %}
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__DIR__) . '/bootstrap.php';
+$owner = require_user();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('add-game-form.php');
@@ -30,9 +31,9 @@ if ($name === '' || strlen($name) > 150 || strlen($description) > 5000 ||
 }
 
 $statement = $mysqli->prepare(
-    'INSERT INTO videogames (game_name, game_description, released_date, rating, rawg_id) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO videogames (game_name, game_description, released_date, rating, rawg_id, owner_id) VALUES (?, ?, ?, ?, ?, ?)'
 );
-$statement->bind_param('sssii', $name, $description, $releasedDate, $rating, $rawgId);
+$statement->bind_param('sssiii', $name, $description, $releasedDate, $rating, $rawgId, $owner);
 try {
     $statement->execute();
 } catch (mysqli_sql_exception $exception) {
@@ -43,4 +44,5 @@ try {
     throw $exception;
 }
 
+if (($_POST['return_to'] ?? '') === 'my-games') redirect('my-games.php');
 redirect('game-details.php?id=' . $mysqli->insert_id);
