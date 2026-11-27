@@ -3,6 +3,12 @@
 require_once dirname(__DIR__) . '/config/database.php';
 require_once __DIR__ . '/support/view.php';
 
+header_remove('X-Powered-By');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax', 'use_strict_mode' => true, 'cookie_secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off']);
 }
