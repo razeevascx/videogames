@@ -1,14 +1,14 @@
 {
-    "name": "wlv",
+    "name": "videogames",
     "version": "1.0.0",
     "description": "",
-    "homepage": "https://github.com/razeevascx/wlv#readme",
+    "homepage": "https://github.com/razeevascx/videogames#readme",
     "bugs": {
-        "url": "https://github.com/razeevascx/wlv/issues"
+        "url": "https://github.com/razeevascx/videogames/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/razeevascx/wlv.git"
+        "url": "git+https://github.com/razeevascx/videogames.git"
     },
     "license": "ISC",
     "author": "",
