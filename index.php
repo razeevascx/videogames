@@ -19,6 +19,7 @@ if (PHP_SAPI === 'cli-server' && str_starts_with($path, '/public/')) {
 }
 
 $routes = [
+    '/captcha.php' => 'captcha',
     '/login.php' => 'login',
     '/signup.php' => 'signup',
     '/logout.php' => 'logout',

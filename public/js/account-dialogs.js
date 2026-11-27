@@ -16,6 +16,14 @@ for (const form of document.querySelectorAll('dialog form[action="login.php"], d
         form.reset();
         message.hidden = true;
     });
+    const refreshCaptcha = () => {
+        const image = form.querySelector('[data-captcha]');
+        const url = new URL(image.src);
+        url.searchParams.set('refresh', Date.now());
+        image.src = url.href;
+        form.elements.captcha.value = '';
+    };
+    form.querySelector('[data-refresh-captcha]').addEventListener('click', refreshCaptcha);
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         const submit = form.querySelector('button[type="submit"], button:not([type])');
@@ -32,8 +40,10 @@ for (const form of document.querySelectorAll('dialog form[action="login.php"], d
                 window.location.assign(result.redirect);
                 return;
             }
+            refreshCaptcha();
             message.textContent = result.error || 'Please try again.';
         } catch {
+            refreshCaptcha();
             message.textContent = 'Unable to complete your request. Please try again.';
         } finally {
             message.hidden = !message.textContent;

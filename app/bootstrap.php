@@ -7,6 +7,15 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax', 'use_strict_mode' => true, 'cookie_secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off']);
 }
 
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    foreach ($_POST as $value) {
+        if (!is_string($value)) {
+            http_response_code(400);
+            exit('Invalid form input.');
+        }
+    }
+}
+
 function e(?string $value): string
 {
     return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

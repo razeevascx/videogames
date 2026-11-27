@@ -30,6 +30,7 @@ function app_site_url(): string
 
 function app_base_path(): string
 {
+    if (PHP_SAPI === 'cli-server') return '';
     $script = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
     return rtrim(dirname($script), '/.');
 }

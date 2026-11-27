@@ -22,10 +22,16 @@ $email = '';
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
-    $email = trim((string) ($_POST['email'] ?? ''));
+    $email = trim(is_string($_POST['email'] ?? null) ? $_POST['email'] : '');
     $password = $_POST['password'] ?? '';
     $id = null;
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
+    $mode = $signup ? 'signup' : 'login';
+    $challenge = $_SESSION['captcha'][$mode] ?? [];
+    unset($_SESSION['captcha'][$mode]);
+    $answer = is_string($_POST['captcha'] ?? null) ? strtoupper(trim($_POST['captcha'])) : '';
+    if (($challenge['expires'] ?? 0) < time() || !hash_equals($challenge['hash'] ?? '', hash('sha256', $answer))) {
+        $error = 'Enter the characters shown in the new security image.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
         $error = 'Enter a valid email address.';
     } elseif (!is_string($password) || str_contains($password, "\0")) {
         $error = $signup ? 'Choose a different password.' : 'Email or password is incorrect.';
