@@ -26,10 +26,10 @@
         </div>
     </div>
 </nav>
-<script src="public/js/action-dialogs.js" defer></script>
+<script nonce="{{ csp_nonce }}" src="public/js/action-dialogs.js" defer></script>
 {% if user_id %}
 {% include 'components/add-game-dialog.html' %}
-<script src="public/js/rawg.js" defer></script>
+<script nonce="{{ csp_nonce }}" src="public/js/rawg.js" defer></script>
 {% endif %}
 {% if not user_id %}
 {% for mode, title in {login: 'Sign in', signup: 'Create account'} %}
@@ -40,5 +40,5 @@
     {% endif %}
 </dialog>
 {% endfor %}
-<script src="public/js/account-dialogs.js" defer></script>
+<script nonce="{{ csp_nonce }}" src="public/js/account-dialogs.js" defer></script>
 {% endif %}

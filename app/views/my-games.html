@@ -23,7 +23,7 @@
     {% endfor %}
 </div>
 {% include 'components/action-toast.html' %}
-<script src="public/js/action-toast.js" defer></script>
-<script src="public/js/game-artwork.js" defer></script>
-<script src="public/js/add-game-dialog.js" defer></script>
+<script nonce="{{ csp_nonce }}" src="public/js/action-toast.js" defer></script>
+<script nonce="{{ csp_nonce }}" src="public/js/game-artwork.js" defer></script>
+<script nonce="{{ csp_nonce }}" src="public/js/add-game-dialog.js" defer></script>
 {% endblock %}

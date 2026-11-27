@@ -82,5 +82,5 @@
     {% endfor %}
 </div>
 {% endif %}
-<script src="public/js/game-artwork.js" defer></script>
+<script nonce="{{ csp_nonce }}" src="public/js/game-artwork.js" defer></script>
 {% endblock %}
